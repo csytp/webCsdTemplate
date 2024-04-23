@@ -1,31 +1,34 @@
 <CsoundSynthesizer>
 <CsOptions>
 ; Select audio/midi flags here according to platform
--odac  ;;;realtime audio out
-;-iadc    ;;;uncomment -iadc if realtime audio input is needed too
+-odac     ;;;realtime audio out
+;-iadc    ;;;uncomment -iadc if real audio input is needed too
 ; For Non-realtime ouput leave only the line below:
-; -o noise.wav -W ;;; for file output any platform
+; -o poscil3.wav -W ;;; for file output any platform
 </CsOptions>
 <CsInstruments>
 
-sr = 44100
-ksmps = 32
-nchnls = 2
+sr = 48000
+ksmps = 48000
+nchnls = 1
 0dbfs  = 1
+
+giSine ftgen 0, 0, 2^10, 10, 1
 
 instr 1
 
-kbeta line -0.9999, p3, 0.9999	;change beta value between -1 to 1
-asig  noise .3, kbeta
-asig  clip asig, 2, .9	;clip signal
-      outs asig * 0.5, asig * 0.5
+    ; Freq Random
+    krnd    randomi 220, 440, 1	
+    ; Sin Gen
+    aSig    poscil3 .6, krnd, giSine
+    
+    out    aSig
 
 endin
+
 </CsInstruments>
 <CsScore>
-
-i 1 0 10
-
+i1 0 40
 e
 </CsScore>
 </CsoundSynthesizer>

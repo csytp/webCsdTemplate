@@ -1,4 +1,4 @@
- <html lang="en">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -7,19 +7,16 @@
 </head>
 
 <script type="text/javascript">
-    
+
     // csound.js is the Csound WASM module
     const csoundjs = "./csound.js";
-    
+
     // csound is the Csound engine object (null as we start)
     let csound = null;
 
-    // instrument on/off state
-    let isOn = false;
-    
     // CSD file name
     const csd = './main.csd'
-        
+
     // Copy file to local filesystem
     async function copyUrlToLocal(src, dest) {
         // fetch the file
@@ -30,26 +27,14 @@
         await csound.fs.writeFile(dest, new Uint8Array(dat));
     }
 
-    // toggle performance on/off
-    async function pause() {
+    // toggle csound off
+    async function kill() {
         if (csound != null) {
-            if (isOn) {
-                await csound.pause();
-                isOn = false;
-            } else {
-                await csound.resume();
-                isOn = true;
-            }
+            await csound.destroy();
+            csound = null;
         }
     }
 
-    // rewind score
-    async function rewind() {
-        if (csound != null)
-            await csound.rewindScore();
-    }
-    
-    
     // this is the JS function to start Csound
     // and resume performance if needed
     async function start() {
@@ -65,14 +50,11 @@
             await csound.compileCsd(csd)
             // start the engine
             await csound.start();
-            isOn = true;
+
         }
-        // start performance if paused
-        if (!isOn) {
-            await csound.resume();
-            isOn = true;
-        }
+
     }
+
 
 </script>
 
@@ -80,11 +62,9 @@
 
     <h1>Minimal Csd Player</h1>
 
-    <input type="button" id="rew" onclick="rewind()" value="Rewind">
-    </input>
     <input type="button" id="play" onclick="start()" value="Play">
     </input>
-    <input type="button" id="pause" onclick="pause()" value="Pause">
+    <input type="button" id="pause" onclick="kill()" value="Kill">
     </input>
 
 </body>
